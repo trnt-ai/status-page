@@ -4,21 +4,21 @@
     "url": "https://trent.ai",
     "icon": "https://icons.duckduckgo.com/ip3/trent.ai.ico",
     "slug": "trent-ai",
-    "status": "down",
-    "uptime": "99.47%",
-    "uptimeDay": "92.72%",
-    "uptimeWeek": "92.90%",
-    "uptimeMonth": "98.37%",
-    "uptimeYear": "99.47%",
-    "time": 172,
-    "timeDay": 216,
-    "timeWeek": 203,
-    "timeMonth": 203,
-    "timeYear": 172,
+    "status": "up",
+    "uptime": "99.43%",
+    "uptimeDay": "89.50%",
+    "uptimeWeek": "92.44%",
+    "uptimeMonth": "98.26%",
+    "uptimeYear": "99.43%",
+    "time": 171,
+    "timeDay": 207,
+    "timeWeek": 198,
+    "timeMonth": 198,
+    "timeYear": 171,
     "dailyMinutesDown": {
       "2026-06-02": 511,
       "2026-06-03": 148,
-      "2026-06-04": 57
+      "2026-06-04": 103
     }
   }
 ]
