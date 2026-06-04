@@ -1,7 +1,7 @@
 url: https://trent.ai
-status: up
-code: 200
-responseTime: 474
-lastUpdated: 2026-06-04T19:00:54.308Z
+status: down
+code: 500
+responseTime: 206
+lastUpdated: 2026-06-04T19:48:07.107Z
 startTime: 2026-03-03T20:23:37.611Z
 generator: Upptime <https://github.com/upptime/upptime>
