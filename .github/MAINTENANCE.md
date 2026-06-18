@@ -23,23 +23,45 @@ workflows.
 
 ## Trade-off
 
-We gave up Upptime's unattended weekly self-upgrade in exchange for removing the
-org-wide PAT. Monitoring, graphs, and the status site are unaffected. The only
-cost is that **Upptime version bumps are now a manual, reviewed action.**
+We gave up Upptime's unattended self-upgrade (which auto-pulled `@master` and ran
+it with the PAT) in exchange for removing the org-wide token. Monitoring, graphs,
+and the status site are unaffected.
 
-## How to update Upptime (manual)
+## Keeping the pinned actions current — automated via Dependabot
 
-Do this ~quarterly, or sooner if upstream publishes a security advisory
-(watch <https://github.com/upptime/upptime/releases>):
+Detection is **not** manual. `.github/dependabot.yml` enables the
+`github-actions` ecosystem, so Dependabot:
 
-1. Review the release notes for the new version and any breaking changes.
-2. Regenerate the workflows locally with a token that has `workflow` scope
-   (your own `gh auth` session works), or hand-port the changes.
-3. **Re-apply this hardening** to the regenerated files: scoped `GITHUB_TOKEN`,
-   `permissions:` blocks, SHA pins, and re-delete the self-upgrade workflows.
-4. Bump the pinned SHAs to the new release (verify the tag → SHA and signature),
-   updating the trailing `# vX.Y.Z` comments.
-5. Open a PR; review the diff before merging.
+- opens a **grouped weekly PR** bumping the pinned SHAs
+  (`actions/checkout`, `upptime/uptime-monitor`, `peaceiris/actions-gh-pages`),
+  updating both the SHA and the `# vX.Y.Z` comment, and
+- opens an **immediate PR** if a security advisory is published for any of them.
+
+Dependabot only rewrites the `uses:` line, so the `permissions:` blocks, the
+`GITHUB_TOKEN` wiring, and the de-templating above are all preserved.
+
+**Merging is one click.** This repo has no PR-triggered CI gate and no branch
+protection, so we deliberately do **not** auto-merge — a quick human glance is
+the only check between an upstream release and production. Per Dependabot PR
+(~weekly): skim the linked release notes for breaking changes or a suspicious
+surprise release, confirm the SHA is from the official tag, then squash-merge.
+(Total: roughly 30 seconds/week. If you'd rather go fully hands-off, see the
+auto-merge note below.)
+
+### Major version bumps need a manual port
+
+Dependabot bumps the action reference but never restructures the workflow files.
+A **major** Upptime bump (e.g. v1 → v2) can change commands/inputs or add new
+workflows; treat those PRs as a manual task: read the upstream migration notes,
+hand-port any structural changes, and re-apply this hardening.
+
+### Optional: fully hands-off (auto-merge)
+
+If the ~30s/week is still unwanted, add a `dependabot/fetch-metadata` workflow
+that auto-merges `semver-patch` + `semver-minor` action bumps and leaves majors
+for review. Accept the tradeoff: with no CI gate, an auto-merged bump reaches
+production unreviewed. Recommended only alongside the post-merge health-check
+workflow (curl `status.trent.ai` + assert the last `uptime.yml` run succeeded).
 
 ## Token permissions per workflow
 
