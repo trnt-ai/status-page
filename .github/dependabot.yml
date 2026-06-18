@@ -1,0 +1,21 @@
+version: 2
+updates:
+  # Keep the SHA-pinned GitHub Actions current automatically (SEC-44).
+  # Dependabot edits only the `uses:` line — it bumps the 40-char SHA and the
+  # trailing `# vX.Y.Z` comment, leaving the permissions: blocks, GITHUB_TOKEN
+  # wiring, and workflow structure untouched. Security advisories open PRs
+  # immediately; routine version bumps are grouped into one weekly PR.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
