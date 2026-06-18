@@ -16,10 +16,11 @@
 
 name: Update Template CI
 on:
-  schedule:
-    - cron: "0 0 * * *"
-  repository_dispatch:
-    types: [update_template]
+  # SEC-44: 'schedule' + 'repository_dispatch' triggers removed so the SHA pin
+  # below is not auto-reverted by Upptime's daily template regeneration (this
+  # job runs upptime/uptime-monitor with the 'update-template' command, which
+  # rewrites every workflow file in this repo from upstream). Template updates
+  # are now a manual, reviewed action via workflow_dispatch.
   workflow_dispatch:
 concurrency:
   group: ${{ github.repository }}-${{ github.head_ref || github.ref_name }}-upptime
@@ -35,7 +36,7 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
           token: ${{ secrets.GH_PAT || github.token }}
       - name: Update template
-        uses: upptime/uptime-monitor@master
+        uses: upptime/uptime-monitor@940c360e6ee3b3f43b234e56a79e15c76a0c6c2e # v1.42.6
         with:
           command: "update-template"
         env:
