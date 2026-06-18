@@ -25,11 +25,16 @@ concurrency:
   group: ${{ github.repository }}-${{ github.head_ref || github.ref_name }}-upptime
   cancel-in-progress: false
 permissions:
-  contents: write # build + push the static site to the gh-pages branch
+  contents: write # uptime-monitor 'site' reads repo data (can tighten to read after a validated run)
+  pages: write # deploy via the first-party GitHub Pages API
+  id-token: write # OIDC token required by actions/deploy-pages
 jobs:
   release:
     name: Build and deploy site
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
       - name: Checkout
@@ -43,11 +48,14 @@ jobs:
           command: "site"
         env:
           GH_PAT: ${{ github.token }}
-      - uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
-        name: GitHub Pages Deploy
+      # SEC-49: replaced peaceiris/actions-gh-pages (non-verified creator) with
+      # the first-party GitHub Pages actions so this repo passes the
+      # verified-creator org policy. Requires the repo Pages source to be set to
+      # "GitHub Actions" (see PR checklist) instead of the gh-pages branch.
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
-          github_token: ${{ github.token }}
-          publish_dir: "site/status-page/__sapper__/export/"
-          force_orphan: "false"
-          user_name: "Upptime Bot"
-          user_email: "73812536+upptime-bot@users.noreply.github.com"
+          path: "site/status-page/__sapper__/export/"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
