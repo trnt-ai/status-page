@@ -6,6 +6,11 @@ updates:
   # wiring, and workflow structure untouched. Security advisories open PRs
   # immediately; routine version bumps are grouped into one weekly PR.
   - package-ecosystem: "github-actions"
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
+      semver-minor-days: 7
+      semver-patch-days: 3
     directory: "/"
     schedule:
       interval: "weekly"
