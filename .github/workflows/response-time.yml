@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Mint a short-lived, repo-scoped installation token for the dedicated
-      # `trnt-upptime-bot` GitHub App. This identity is the sole bypass actor on
+      # `trent-ai-upptime-bot` GitHub App. This identity is the sole bypass actor on
       # the branch ruleset, so the bot's direct-to-default-branch commits are
       # allowed while humans + Dependabot still require a reviewed PR. The token
       # auto-expires (~1h); the App private key is the only stored secret.
