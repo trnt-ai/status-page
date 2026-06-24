@@ -1,0 +1,92 @@
+# Lightweight pre-merge preflight for this Upptime status page.
+#
+# This repo has no application code to build or test, so without a PR-triggered
+# job there are no automated checks for change-management controls (and Vanta's
+# "Automated checks were run on code changes" test fails). Rather than re-assert
+# org-enforced policies (SHA pinning, allowed actions — already required org-wide),
+# this validates the one thing specific to THIS repo: that `.upptimerc.yml`
+# still describes a working status page. It catches a malformed config — bad
+# YAML, a missing site name, or an invalid monitor URL — before it ships and
+# silently breaks status.trent.ai.
+#
+# Self-contained by design: only the GitHub-owned, SHA-pinned actions/checkout
+# plus Python (preinstalled on the runner). No third-party actions.
+name: Validate
+
+on:
+  pull_request:
+    paths:
+      - ".upptimerc.yml"
+      - ".github/**"
+
+# Least privilege: read-only checkout, no secrets, no write scopes.
+permissions:
+  contents: read
+
+# Cancel superseded runs, scoped per-PR.
+concurrency:
+  group: validate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate Upptime config
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Install PyYAML
+        run: python3 -m pip install --quiet pyyaml
+
+      - name: Preflight .upptimerc.yml
+        run: |
+          python3 - <<'PY'
+          import sys, yaml
+          from urllib.parse import urlparse
+
+          errors = []
+          try:
+              with open(".upptimerc.yml") as fh:
+                  cfg = yaml.safe_load(fh)
+          except (OSError, yaml.YAMLError) as e:
+              print(f".upptimerc.yml failed to parse: {e}")
+              sys.exit(1)
+
+          if not isinstance(cfg, dict):
+              print(".upptimerc.yml did not parse to a mapping.")
+              sys.exit(1)
+
+          # owner/repo must match this checkout so workflows commit to the right place.
+          import os
+          expected = os.environ.get("GITHUB_REPOSITORY", "")
+          if "/" in expected:
+              owner, repo = expected.split("/", 1)
+              if cfg.get("owner") != owner:
+                  errors.append(f"owner is {cfg.get('owner')!r}, expected {owner!r}")
+              if cfg.get("repo") != repo:
+                  errors.append(f"repo is {cfg.get('repo')!r}, expected {repo!r}")
+
+          # At least one monitored site, each with a name and a valid http(s) URL.
+          sites = cfg.get("sites")
+          if not isinstance(sites, list) or not sites:
+              errors.append("sites must be a non-empty list")
+          else:
+              for i, site in enumerate(sites):
+                  if not isinstance(site, dict):
+                      errors.append(f"sites[{i}] is not a mapping")
+                      continue
+                  if not site.get("name"):
+                      errors.append(f"sites[{i}] is missing a name")
+                  url = site.get("url", "")
+                  parsed = urlparse(url)
+                  if parsed.scheme not in ("http", "https") or not parsed.netloc:
+                      errors.append(f"sites[{i}] has an invalid url: {url!r}")
+
+          if errors:
+              print(".upptimerc.yml preflight failed:")
+              for e in errors:
+                  print(f"  - {e}")
+              sys.exit(1)
+          print(".upptimerc.yml looks good.")
+          PY
