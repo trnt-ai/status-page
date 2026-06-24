@@ -29,15 +29,26 @@ jobs:
     name: Check status
     runs-on: ubuntu-latest
     steps:
+      # Mint a short-lived, repo-scoped installation token for the dedicated
+      # `trent-ai-upptime-bot` GitHub App. This identity is the sole bypass actor on
+      # the branch ruleset, so the bot's direct-to-default-branch commits are
+      # allowed while humans + Dependabot still require a reviewed PR. The token
+      # auto-expires (~1h); the App private key is the only stored secret.
+      - name: Generate Upptime app token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ secrets.UPPTIME_APP_ID }}
+          private-key: ${{ secrets.UPPTIME_APP_PRIVATE_KEY }}
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.head_ref || github.ref_name }}
-          token: ${{ github.token }}
+          token: ${{ steps.app-token.outputs.token }}
       - name: Check endpoint status
         uses: upptime/uptime-monitor@176831d39d1e5eb6f52a76894ccf4fad51463d33 # v1.43.0
         with:
           command: "update"
         env:
-          GH_PAT: ${{ github.token }}
+          GH_PAT: ${{ steps.app-token.outputs.token }}
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
