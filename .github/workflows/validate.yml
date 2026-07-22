@@ -13,11 +13,12 @@
 # plus Python (preinstalled on the runner). No third-party actions.
 name: Validate
 
+# Runs on every PR (no path filter): this check is the repo's required
+# status check, and a required check that can skip is a merge deadlock —
+# PRs not touching the filtered paths would wait forever. The job costs
+# seconds; unconditional is cheaper than wedged.
 on:
   pull_request:
-    paths:
-      - ".upptimerc.yml"
-      - ".github/**"
 
 # Least privilege: read-only checkout, no secrets, no write scopes.
 permissions:
