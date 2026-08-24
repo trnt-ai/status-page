@@ -46,7 +46,7 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
           token: ${{ github.token }}
       - name: Generate site
-        uses: upptime/uptime-monitor@4fec88256b5917a2ed07a088df6e205869b424d6 # v1.43.13
+        uses: upptime/uptime-monitor@8575473b4713da59d62f8d0f7cb5e4dfb86d55b7 # v1.43.14
         with:
           command: "site"
         env:
