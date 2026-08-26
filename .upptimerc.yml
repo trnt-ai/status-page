@@ -10,10 +10,12 @@ sites:
   # server are alive. An outage times out or 5xxes -> monitor goes red.
   - name: 🇺🇸 Trent App (US)
     url: https://app.trent.ai/api/health
+    slug: trent-app-us
     expectedStatusCodes:
       - 401
   - name: 🇪🇺 Trent App (EU)
     url: https://app.eu.trent.ai/api/health
+    slug: trent-app-eu
     expectedStatusCodes:
       - 401
 
