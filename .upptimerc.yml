@@ -6,8 +6,8 @@ sites:
   - name: Trent AI
     url: https://trent.ai
   # Per-region app liveness: /api/health answers anonymous callers with a JSON 401
-  # produced by application code, so receiving it proves DNS + Vercel + the Next.js
-  # server are alive. An outage times out or 5xxes -> monitor goes red.
+  # produced by application code, so receiving it proves DNS, Vercel, and the
+  # Next.js server are all alive. An outage times out or 5xxes -> monitor goes red.
   - name: 🇺🇸 Trent App (US)
     url: https://app.trent.ai/api/health
     slug: trent-app-us
