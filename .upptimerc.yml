@@ -5,6 +5,17 @@ repo: status-page # The name of this repository
 sites:
   - name: Trent AI
     url: https://trent.ai
+  # Per-region app liveness: /api/health answers anonymous callers with a JSON 401
+  # produced by application code, so receiving it proves DNS + Vercel + the Next.js
+  # server are alive. An outage times out or 5xxes -> monitor goes red.
+  - name: 🇺🇸 Trent App (US)
+    url: https://app.trent.ai/api/health
+    expectedStatusCodes:
+      - 401
+  - name: 🇪🇺 Trent App (EU)
+    url: https://app.eu.trent.ai/api/health
+    expectedStatusCodes:
+      - 401
 
 status-website:
   cname: status.trent.ai
