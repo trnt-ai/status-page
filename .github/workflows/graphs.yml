@@ -35,7 +35,7 @@ jobs:
       # auto-expires (~1h); the App private key is the only stored secret.
       - name: Generate Upptime app token
         id: app-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
           app-id: ${{ secrets.UPPTIME_APP_ID }}
           private-key: ${{ secrets.UPPTIME_APP_PRIVATE_KEY }}
@@ -45,7 +45,7 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
           token: ${{ steps.app-token.outputs.token }}
       - name: Generate graphs
-        uses: upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889 # v1.44.1
+        uses: upptime/uptime-monitor@0c7ff0afb99f9021627f3e9c6eb3b5c972ff242f # v1.45.2
         with:
           command: "graphs"
         env:
