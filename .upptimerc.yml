@@ -5,6 +5,28 @@ repo: status-page # The name of this repository
 sites:
   - name: Trent AI
     url: https://trent.ai
+  - name: Trent AI blog
+    url: https://trent.ai/blog/
+    slug: trent-ai-blog
+  - name: Trent AI blog post
+    url: https://trent.ai/blog/sast-vs-dast/
+    slug: trent-ai-post
+  - name: Trent AI sitemap
+    url: https://trent.ai/sitemap_index.xml
+    slug: trent-ai-sitemap
+  - name: Trent AI llms.txt
+    url: https://trent.ai/llms.txt
+    slug: trent-ai-llms
+  # WordPress liveness: the website's plugin answers an unsigned read with a
+  # 401 from WordPress itself, never from Pressable's cache, so receiving it
+  # proves Pressable, WordPress and the plugin are alive. The visit also wakes
+  # WordPress's scheduler, which publishes scheduled posts.
+  - name: Trent AI CMS
+    url: https://cms.trent.ai/wp-json/trent/v1/index
+    slug: trent-ai-cms
+    expectedStatusCodes:
+      - 401
+
   # Per-region app liveness: /api/health answers anonymous callers with a JSON 401
   # produced by application code, so receiving it proves DNS, Vercel, and the
   # Next.js server are all alive. An outage times out or 5xxes -> monitor goes red.
